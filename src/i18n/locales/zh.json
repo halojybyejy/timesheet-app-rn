@@ -1,0 +1,20 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑"
+  },
+  "login": {
+    "title": "工时表",
+    "username": "用户名",
+    "password": "密码",
+    "button": "登录",
+    "failedTitle": "登录失败",
+    "failedMessage": "用户名或密码无效"
+  },
+  "settings": {
+    "language": "语言",
+    "languageInfo": "选择您喜欢的语言。保存后，应用程序将立即更新为您选择的语言。"
+  }
+}

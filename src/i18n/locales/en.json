@@ -1,0 +1,20 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "login": {
+    "title": "Timesheet",
+    "username": "Username",
+    "password": "Password",
+    "button": "Login",
+    "failedTitle": "Login Failed",
+    "failedMessage": "Invalid username or password"
+  },
+  "settings": {
+    "language": "Language",
+    "languageInfo": "Choose your preferred language. The application will reflect your choice immediately after saving."
+  }
+}
