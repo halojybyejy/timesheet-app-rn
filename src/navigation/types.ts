@@ -2,6 +2,7 @@ export type RootStackParamList = {
   LeaderTabs: undefined;
   MemberTabs: undefined;
   Login: undefined;
+  SignUp: undefined;
   Home: undefined;
   Timesheet: undefined;
   TimesheetApprove: undefined;

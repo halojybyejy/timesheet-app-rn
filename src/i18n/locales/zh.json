@@ -6,12 +6,35 @@
     "edit": "编辑"
   },
   "login": {
-    "title": "工时表",
+    "title": "登录",
     "username": "用户名",
     "password": "密码",
     "button": "登录",
     "failedTitle": "登录失败",
-    "failedMessage": "用户名或密码无效"
+    "failedMessage": "用户名或密码无效",
+    "noAccount": "没有账号？",
+    "signUp": "注册"
+  },
+  "signUp": {
+    "title": "注册",
+    "username": "用户名",
+    "emailAddress": "电子邮箱",
+    "phoneNumber": "电话号码",
+    "password": "密码",
+    "button": "注册",
+    "email": "邮箱",
+    "phone": "电话",
+    "alreadyHaveAccount": "已有账号？",
+    "loginLink": "登录",
+    "errors": {
+      "usernameRequired": "用户名不能为空",
+      "emailRequired": "邮箱不能为空",
+      "emailInvalid": "请输入有效的邮箱地址",
+      "phoneRequired": "电话号码不能为空",
+      "phoneInvalid": "请输入有效的电话号码",
+      "passwordRequired": "密码不能为空",
+      "passwordLength": "密码长度至少为6个字符"
+    }
   },
   "settings": {
     "language": "语言",

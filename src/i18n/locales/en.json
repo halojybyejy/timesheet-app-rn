@@ -6,12 +6,35 @@
     "edit": "Edit"
   },
   "login": {
-    "title": "Timesheet",
+    "title": "Login",
     "username": "Username",
     "password": "Password",
     "button": "Login",
     "failedTitle": "Login Failed",
-    "failedMessage": "Invalid username or password"
+    "failedMessage": "Invalid username or password",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign Up"
+  },
+  "signUp": {
+    "title": "Sign Up",
+    "username": "Username",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "password": "Password",
+    "button": "Sign Up",
+    "email": "Email",
+    "phone": "Phone",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Log In",
+    "errors": {
+      "usernameRequired": "Username is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid phone number",
+      "passwordRequired": "Password is required",
+      "passwordLength": "Password must be at least 6 characters"
+    }
   },
   "settings": {
     "language": "Language",

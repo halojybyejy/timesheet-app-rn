@@ -6,6 +6,7 @@ import { RootStackParamList } from './types';
 import LeaderTabs from './LeaderTabs';
 import MemberTabs from './MemberTabs';
 import LoginScreen from '../screens/common/LoginScreen';
+import SignUpScreen from '../screens/common/SignUpScreen';
 import HomeScreen from '../screens/common/HomeScreen';
 import SelectProjectScreen from '../screens/common/SelectProjectScreen';
 import CreateProjectScreen from '../screens/common/CreateProjectScreen';
@@ -37,6 +38,7 @@ const AppNavigator = () => {
           screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="SelectProject" component={SelectProjectScreen} />
         <Stack.Screen name="CreateProject" component={CreateProjectScreen} />
         <Stack.Screen name="JoinProject" component={JoinProjectScreen} />
