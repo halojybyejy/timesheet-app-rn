@@ -55,12 +55,15 @@ type RouteParams = {
 const TimesheetDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { timesheet } = route.params as RouteParams;
+  const { timesheet, onStatusUpdate } = route.params as RouteParams;
   
   const [personalNote, setPersonalNote] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
-  
+  const [rejectionModalVisible, setRejectionModalVisible] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  console.log('timesheet');
+  console.log(timesheet);
   // Function to handle image tap
   const handleImageTap = (uri: string) => {
     setSelectedImage(uri);
@@ -72,10 +75,27 @@ const TimesheetDetailScreen = () => {
     setImageViewerVisible(false);
   };
   
-  // Function to mark timesheet as completed
-  const handleMarkAsCompleted = () => {
-    // In a real app, this would update the timesheet in a database
-    // For now, we just go back to the previous screen
+  // Function to approve timesheet
+  const handleApproveTimesheet = () => {
+    onStatusUpdate(timesheet.id, 'Approved');
+    navigation.goBack();
+  };
+  
+  // Function to open rejection modal
+  const openRejectionModal = () => {
+    setRejectionModalVisible(true);
+  };
+  
+  // Function to close rejection modal
+  const closeRejectionModal = () => {
+    setRejectionModalVisible(false);
+    setRejectionReason('');
+  };
+  
+  // Function to submit rejection
+  const handleRejectTimesheet = () => {
+    onStatusUpdate(timesheet.id, 'Rejected', rejectionReason);
+    setRejectionModalVisible(false);
     navigation.goBack();
   };
   
@@ -113,6 +133,12 @@ const TimesheetDetailScreen = () => {
     }
   };
   
+  // Get main category from timesheet for header tag
+  const mainCategory = timesheet.completedTasks && 
+    timesheet.completedTasks.length > 0 && 
+    timesheet.completedTasks[0].category ? 
+    timesheet.completedTasks[0].category : 'Development';
+  
   const isDueSoon = timesheet.date && 
     isBefore(new Date(timesheet.date), addDays(new Date(), 2)) && 
     timesheet.status === 'Pending';
@@ -131,20 +157,20 @@ const TimesheetDetailScreen = () => {
       </View>
       
       <ScrollView style={styles.scrollView}>
-        {timesheet.completedTasks && timesheet.completedTasks.length > 0 && 
-          timesheet.completedTasks[0].category && (
-          <View style={[
-            styles.categoryTag, 
-            { backgroundColor: getCategoryColor(timesheet.completedTasks[0].category) }
-          ]}>
-            <Text style={styles.categoryTagText}>{timesheet.completedTasks[0].category}</Text>
-          </View>
-        )}
+        {/* Category Tag */}
+        <View style={[
+          styles.categoryTag, 
+          { backgroundColor: getCategoryColor(mainCategory) }
+        ]}>
+          <Text style={styles.categoryTagText}>{mainCategory}</Text>
+        </View>
         
+        {/* Title */}
         <Text style={styles.taskTitle}>{timesheet.memberName}'s Timesheet</Text>
         
+        {/* Assigned By Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Member</Text>
+          <Text style={styles.sectionTitle}>Assigned By</Text>
           <View style={styles.assigneeContainer}>
             <Ionicons name="person-outline" size={16} color="#777" />
             <Text style={styles.sectionContent}>
@@ -153,9 +179,10 @@ const TimesheetDetailScreen = () => {
           </View>
         </View>
         
+        {/* Date Information */}
         <View style={styles.datesContainer}>
           <View style={styles.dateItem}>
-            <Text style={styles.sectionTitle}>Date</Text>
+            <Text style={styles.sectionTitle}>Assigned Date</Text>
             <View style={styles.assigneeContainer}>
               <Ionicons name="calendar-outline" size={16} color="#777" />
               <Text style={styles.sectionContent}>
@@ -179,26 +206,29 @@ const TimesheetDetailScreen = () => {
           </View>
         </View>
         
+        {/* Status */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Status</Text>
-          <View style={[
-            styles.statusBadge,
-            { backgroundColor: getStatusColor(timesheet.status) }
-          ]}>
-            <Text style={styles.statusText}>{timesheet.status}</Text>
+          <View style={styles.statusContainer}>
+            <View style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor(timesheet.status) }
+            ]}>
+              <Text style={styles.statusText}>{timesheet.status}</Text>
+            </View>
           </View>
         </View>
         
-        {timesheet.description && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <Text style={styles.sectionContent}>
-              {timesheet.description}
-            </Text>
-          </View>
-        )}
+        {/* Task Description */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Task Description</Text>
+          <Text style={styles.descriptionText}>
+            {timesheet.description || "Create reusable UI components for the dashboard following our design system. Include charts, activity feed, and notification panels. Make sure everything is responsive and follows accessibility guidelines."}
+          </Text>
+        </View>
         
-        {timesheet.attachments && timesheet.attachments.length > 0 && (
+        {/* Attachments */}
+        {(timesheet.attachments && timesheet.attachments.length > 0) ? (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Attachments</Text>
             <View style={styles.attachmentList}>
@@ -215,8 +245,8 @@ const TimesheetDetailScreen = () => {
                             style={styles.attachmentImage}
                             resizeMode="cover"
                           />
-                          <View style={styles.imageOverlay}>
-                            <Ionicons name="expand-outline" size={22} color="#fff" />
+                          <View style={styles.expandIcon}>
+                            <Ionicons name="expand-outline" size={16} color="#fff" />
                           </View>
                         </View>
                       </TouchableOpacity>
@@ -234,8 +264,14 @@ const TimesheetDetailScreen = () => {
               ))}
             </View>
           </View>
+        ) : (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Attachments</Text>
+            <Text style={styles.sectionContent}>No attachments found</Text>
+          </View>
         )}
-        
+
+        {/* Personal Note */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Add Personal Note</Text>
           <TextInput
@@ -248,14 +284,38 @@ const TimesheetDetailScreen = () => {
         </View>
       </ScrollView>
       
+      {/* Action Buttons */}
       {timesheet.status === 'Pending' && (
+        <View style={styles.buttonContainer}>
+          <View style={styles.buttonsRow}>
+            <TouchableOpacity
+              style={[styles.button, styles.approveButton]}
+              onPress={handleApproveTimesheet}
+            >
+              <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
+              <Text style={styles.buttonText}>Approve</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[styles.button, styles.rejectButton]}
+              onPress={openRejectionModal}
+            >
+              <Ionicons name="close-circle-outline" size={20} color="#fff" />
+              <Text style={styles.buttonText}>Reject</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      
+      {/* Mark as Completed Button (for status other than 'Pending') */}
+      {timesheet.status !== 'Pending' && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.completeButton}
-            onPress={handleMarkAsCompleted}
+            onPress={() => navigation.goBack()}
           >
             <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
-            <Text style={styles.completeButtonText}>Approve Timesheet</Text>
+            <Text style={styles.completeButtonText}>Back to Timesheets</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -289,6 +349,54 @@ const TimesheetDetailScreen = () => {
           
           <View style={styles.imageViewerFooter}>
             <Text style={styles.imageViewerText}>Tap anywhere to close</Text>
+          </View>
+        </View>
+      </Modal>
+      
+      {/* Rejection reason modal */}
+      <Modal
+        visible={rejectionModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeRejectionModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.rejectionModalContent}>
+            <Text style={styles.rejectionModalTitle}>Reject Timesheet</Text>
+            
+            <Text style={styles.rejectionModalLabel}>
+              Please provide a reason for rejection:
+            </Text>
+            
+            <TextInput
+              style={styles.rejectionInput}
+              value={rejectionReason}
+              onChangeText={setRejectionReason}
+              placeholder="Enter rejection reason..."
+              multiline
+              autoFocus
+            />
+            
+            <View style={styles.rejectionModalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={closeRejectionModal}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[
+                  styles.modalButton, 
+                  styles.submitButton,
+                  !rejectionReason.trim() && styles.disabledButton
+                ]}
+                onPress={handleRejectTimesheet}
+                disabled={!rejectionReason.trim()}
+              >
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -329,39 +437,39 @@ const styles = StyleSheet.create({
   },
   categoryTag: {
     alignSelf: 'flex-start',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-    marginBottom: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    marginBottom: 16,
   },
   categoryTagText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#fff',
     fontWeight: '500',
   },
   taskTitle: {
-    fontSize: 22,
-    fontWeight: '600',
+    fontSize: 24,
+    fontWeight: 'bold',
     color: '#333',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 14,
     color: '#888',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   sectionContent: {
     fontSize: 16,
     color: '#333',
-    marginLeft: 4,
+    marginLeft: 8,
   },
   datesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   dateItem: {
     flex: 1,
@@ -374,37 +482,47 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   statusBadge: {
     alignSelf: 'flex-start',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
   },
   statusText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#fff',
     fontWeight: '500',
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: '#333',
+    lineHeight: 24,
   },
   attachmentList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 12,
+    marginTop: 8,
   },
   attachmentItem: {
-    margin: 4,
+    marginRight: 16,
+    marginBottom: 16,
     alignItems: 'center',
-    width: 100,
+    width: 110,
   },
   attachmentImage: {
-    width: 90,
-    height: 90,
+    width: 100,
+    height: 100,
     borderRadius: 8,
     backgroundColor: '#e0e0e0',
     marginBottom: 4,
   },
   documentIconContainer: {
-    width: 90,
-    height: 90,
+    width: 100,
+    height: 100,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -417,7 +535,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#555',
     textAlign: 'center',
-    width: 90,
+    width: 100,
     marginTop: 4,
   },
   noteInput: {
@@ -436,12 +554,37 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#f0f0f0',
   },
+  buttonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 8,
+    marginHorizontal: 6,
+  },
+  approveButton: {
+    backgroundColor: '#4caf50',
+  },
+  rejectButton: {
+    backgroundColor: '#f44336',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+    marginLeft: 8,
+  },
   completeButton: {
     backgroundColor: '#4caf50',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
+    padding: 14,
     borderRadius: 8,
   },
   completeButtonText: {
@@ -451,6 +594,17 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   // Image viewer styles
+  imageContainer: {
+    position: 'relative',
+  },
+  expandIcon: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 12,
+    padding: 4,
+  },
   imageViewerContainer: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
@@ -469,9 +623,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 20,
-  },
-  imageContainer: {
-    position: 'relative',
   },
   imageOverlay: {
     position: 'absolute',
@@ -502,6 +653,78 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     textAlign: 'center',
+  },
+  // Rejection modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  rejectionModalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    width: '100%',
+    maxWidth: 500,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  rejectionModalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  rejectionModalLabel: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 8,
+  },
+  rejectionInput: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    padding: 12,
+    height: 120,
+    textAlignVertical: 'top',
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  rejectionModalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginLeft: 10,
+  },
+  cancelButton: {
+    backgroundColor: '#f5f5f5',
+  },
+  cancelButtonText: {
+    color: '#555',
+    fontWeight: '600',
+  },
+  submitButton: {
+    backgroundColor: '#f44336',
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  disabledButton: {
+    backgroundColor: '#e0e0e0',
+    opacity: 0.7,
   },
 });
 

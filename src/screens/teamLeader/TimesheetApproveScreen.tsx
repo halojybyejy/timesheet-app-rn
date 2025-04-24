@@ -13,6 +13,15 @@ import { RootStackParamList } from '../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+// Attachment interface
+interface Attachment {
+	type: 'image' | 'document';
+	uri: string;
+	name: string;
+	size?: number;
+	mimeType?: string;
+}
+
 interface Employee {
 	id: string;
 	name: string;
@@ -21,6 +30,7 @@ interface Employee {
 	tasksCompleted: number;
 	status: 'Pending' | 'Approved' | 'Rejected';
 	date: Date;
+	attachments?: Attachment[];
 }
 
 const TimesheetApproveScreen = () => {
@@ -86,6 +96,18 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 2,
 			status: 'Pending',
 			date: new Date(2025, 4, 1), // May 1, 2025
+			attachments: [
+			  {
+				type: 'image',
+				uri: 'https://picsum.photos/id/231/200/300',
+				name: 'dashboard_mockup.jpg'
+			  },
+			  {
+				type: 'document',
+				uri: 'https://example.com/doc',
+				name: 'design_specs.pdf'
+			  }
+			]
 		},
 		{
 			id: '2',
@@ -95,6 +117,18 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 2,
 			status: 'Pending',
 			date: new Date(2025, 4, 1), // May 1, 2025
+			attachments: [
+			  {
+				type: 'image',
+				uri: 'https://picsum.photos/id/231/200/300',
+				name: 'dashboard_mockup.jpg'
+			  },
+			  {
+				type: 'document',
+				uri: 'https://example.com/doc',
+				name: 'design_specs.pdf'
+			  }
+			]
 		},
 		{
 			id: '3',
@@ -104,6 +138,18 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 2,
 			status: 'Approved',
 			date: new Date(2025, 3, 30), // April 30, 2025
+			attachments: [
+			  {
+				type: 'image',
+				uri: 'https://picsum.photos/id/231/200/300',
+				name: 'dashboard_mockup.jpg'
+			  },
+			  {
+				type: 'document',
+				uri: 'https://example.com/doc',
+				name: 'design_specs.pdf'
+			  }
+			]
 		},
 		{
 			id: '4',
@@ -113,6 +159,18 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 3,
 			status: 'Rejected',
 			date: new Date(2025, 3, 30), // April 30, 2025
+			attachments: [
+			  {
+				type: 'image',
+				uri: 'https://picsum.photos/id/231/200/300',
+				name: 'dashboard_mockup.jpg'
+			  },
+			  {
+				type: 'document',
+				uri: 'https://example.com/doc',
+				name: 'design_specs.pdf'
+			  }
+			]
 		},
 		// Additional Approved/Rejected timesheets
 		{
@@ -123,6 +181,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 5,
 			status: 'Approved',
 			date: new Date(2025, 3, 29), // April 29, 2025
+			attachments: []
 		},
 		{
 			id: '6',
@@ -132,6 +191,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 4,
 			status: 'Approved',
 			date: new Date(2025, 3, 29), // April 29, 2025
+			attachments: []
 		},
 		{
 			id: '7',
@@ -141,6 +201,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 3,
 			status: 'Rejected',
 			date: new Date(2025, 3, 29), // April 29, 2025
+			attachments: []
 		},
 		{
 			id: '8',
@@ -150,6 +211,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 6,
 			status: 'Approved',
 			date: new Date(2025, 3, 28), // April 28, 2025
+			attachments: []
 		},
 		{
 			id: '9',
@@ -159,6 +221,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 4,
 			status: 'Approved',
 			date: new Date(2025, 3, 28), // April 28, 2025
+			attachments: []
 		},
 		{
 			id: '10',
@@ -168,6 +231,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 3,
 			status: 'Rejected',
 			date: new Date(2025, 3, 28), // April 28, 2025
+			attachments: []
 		},
 		{
 			id: '11',
@@ -177,6 +241,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 5,
 			status: 'Approved',
 			date: new Date(2025, 3, 27), // April 27, 2025
+			attachments: []
 		},
 		{
 			id: '12',
@@ -186,6 +251,7 @@ const TimesheetApproveScreen = () => {
 			tasksCompleted: 4,
 			status: 'Rejected',
 			date: new Date(2025, 3, 27), // April 27, 2025
+			attachments: []
 		},
 	];
 
@@ -278,6 +344,7 @@ const TimesheetApproveScreen = () => {
 				}),
 				status: employee.status,
 				description: `Timesheet for ${employee.name} on ${format(employee.date, 'EEEE, MMMM d, yyyy')}`,
+				attachments: employee.attachments
 			};
 			
 			// For debugging
